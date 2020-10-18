@@ -1,0 +1,6 @@
+flask==1.1.2
+waitress
+# pytest
+# coverage
+# wheel
+

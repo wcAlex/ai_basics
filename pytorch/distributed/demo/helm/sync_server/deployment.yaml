@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syncserver-deployment
+  labels:
+    app: syncserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syncserver
+  template:
+    metadata:
+      labels:
+        app: syncserver
+    spec:
+      containers:
+      - name: syncserver
+        image: alex1005/dist_syncserver:1.0
+        ports:
+        - containerPort: 8080

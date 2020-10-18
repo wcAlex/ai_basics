@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pytorch-trainer
+spec:
+  selector:
+    matchLabels:
+      app: pytorch
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: pytorch
+    spec:
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: training-pv-claim
+      containers:
+      - name: pytorch
+        image: alex1005/disttrainer:pytorch-1
+        env:
+        - name: TRAINER_PORT
+          value: "12355"
+        - name: GROUP_ID
+          value: "pytorch-train-job1"
+        - name: "WORLD_SIZE"
+          value: "2"
+        - name: SYNC_SERVER
+          value: "http://10.101.85.29:8080/"
+        - name: DATA_PATH
+          value: "/app/mnt/pytorch/data/"
+        - name: MODEL_PATH
+          value: "/app/mnt/pytorch/models/train-job1/" 
+        volumeMounts:
+        - mountPath: "/app/mnt"
+          name: pv-storage
