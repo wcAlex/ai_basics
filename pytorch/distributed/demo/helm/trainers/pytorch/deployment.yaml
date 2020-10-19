@@ -16,6 +16,9 @@ spec:
       - name: pv-storage
         persistentVolumeClaim:
           claimName: training-pv-claim
+      - name: dshm
+        emptyDir:
+          medium: Memory
       containers:
       - name: pytorch
         image: alex1005/disttrainer:pytorch-1
@@ -23,7 +26,7 @@ spec:
         - name: TRAINER_PORT
           value: "12355"
         - name: GROUP_ID
-          value: "pytorch-train-job1"
+          value: "pytorch-train-job6"
         - name: "WORLD_SIZE"
           value: "2"
         - name: SYNC_SERVER
@@ -35,3 +38,8 @@ spec:
         volumeMounts:
         - mountPath: "/app/mnt"
           name: pv-storage
+        # increase share memory for docker in kubernetes
+        # https://stackoverflow.com/questions/46085748/define-size-for-dev-shm-on-container-engine/46434614#46434614
+        # https://docs.openshift.com/container-platform/3.6/dev_guide/shared_memory.html 
+        - mountPath: /dev/shm
+          name: dshm

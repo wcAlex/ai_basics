@@ -10,5 +10,8 @@ spec:
     storage: 30Gi
   accessModes:
     - ReadWriteOnce
+  # remember to grant full permission to the host path on the node
+  # example, `minikube ssh` and `sudo chmod -R a+rwx /mnt/data/disttrain`
+  # copy data to the disk to boost the training, `scp -r -i $(minikube ssh-key) /home/chi/workspace/ai_basics/pytorch/distributed/demo/mount/data docker@$(minikube ip):/mnt/data/disttrain/pytorch
   hostPath:
-    path: "/mnt/data"
+    path: "/mnt/data/disttrain"
