@@ -19,3 +19,6 @@ docker run -d --shm-size=4gb --env TRAINER_PORT=12355 --env GROUP_ID=pytorch5 --
 docker logs -f <container_id, ex: efcdc231bc5d66aa6242e7957b6ef568d8534a755dcdff9949c1c277395f5207>
 docker exec <container_id, ex: efcdc231bc5d66aa6242e7957b6ef568d8534a755dcdff9949c1c277395f5207> tail -f /app/log.txt
 
+# list all machines in the sync group
+curl http://localhost:5000/groups
+

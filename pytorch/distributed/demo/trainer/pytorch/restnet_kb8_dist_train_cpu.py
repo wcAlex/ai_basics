@@ -161,7 +161,12 @@ def train(train_loader, model, criterion, optimizer, epoch):
     model.train()
 
     end = time.time()
+    batch_begin_at = time.time()
     for i, (input, target) in enumerate(train_loader):
+        batch_start_at = time.time()
+        batch_prepare_time = batch_start_at - batch_begin_at
+        # estimate time the train_loader takes
+        print(f"batch {i} prepare time {batch_prepare_time}s")
 
         # measure data loading time
         data_time.update(time.time() - end)
@@ -186,6 +191,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
+        batch_begin_at = time.time()
 
         if i % 10 == 0:
             print('Epoch: [{0}][{1}/{2}]\t'
@@ -414,15 +420,13 @@ os.environ['MASTER_PORT'] = master_port
 data_path = "./data"
 if 'DATA_PATH' in os.environ and os.getenv('DATA_PATH') is not None:
     data_path = os.getenv('DATA_PATH')
+    Path(data_path).mkdir(parents=True, exist_ok=True)
 
 model_path = "model.ts"
 if 'MODEL_PATH' in os.environ and os.getenv('MODEL_PATH') is not None:
-    model_path = os.getenv('MODEL_PATH')
-
-Path(data_path).mkdir(parents=True, exist_ok=True)
-Path(model_path).mkdir(parents=True, exist_ok=True)
-
-model_path = model_path + "model.ts"
+    model_path = os.getenv('MODEL_PATH') 
+    Path(model_path).mkdir(parents=True, exist_ok=True)
+    model_path = model_path + "model.ts"
 
 print(f"Initialize process group, world_size={world_size}, process rank={rank}, master address={master_address}:{master_port}, data:{data_path}, model:{model_path}")
 
@@ -540,6 +544,9 @@ val_loader = torch.utils.data.DataLoader(valset, batch_size=batch_size, shuffle=
 
 best_prec1 = 0
 
+start_time = time.time()
+print(f"training start at {start_time}")
+
 for epoch in range(num_epochs):
     # Set epoch count for DistributedSampler
     train_sampler.set_epoch(epoch)
@@ -563,13 +570,17 @@ for epoch in range(num_epochs):
     print("\tEpoch Accuracy: {}".format(prec1))
     print("\tBest Accuracy: {}".format(best_prec1))
 
+end_time = time.time()
+duration_in_seconds = end_time - start_time
+print(f"total training time: {duration_in_seconds}s")
+
 # save model by the rank0 process.
 if rank == 0:
-    path = os.environ["MODEL_PATH"] if "MODEL_PATH" in os.environ else ""
-    path = path + "res.dt"
+    print(f"save model at {model_path}")
+    torch.save(model.state_dict(), model_path)
 
-    print(f"save model at {path}")
-    torch.save(model.state_dict(), path)
+group_id = os.getenv('GROUP_ID')
+print(f"training {group_id} finished.")
 
 try:
     input("Press Enter to exit...")
