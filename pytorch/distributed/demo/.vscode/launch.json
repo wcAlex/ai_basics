@@ -1,17 +1,22 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
 
         {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        }, 
+            "name":"resnet_pytorch_kb8_trainer",
+            "type":"python",
+            "request":"launch",
+            "program":"${workspaceFolder}/trainer/pytorch/restnet_kb8_dist_train_cpu.py",
+            "console":"integratedTerminal",
+            "env": {
+                "TRAINER_PORT" : "12355",
+                "WORLD_SIZE" : "1",
+                "GROUP_ID" : "pytorch2",
+                "SYNC_SERVER" : "http://localhost:5000/",
+                "DATA_PATH" : "/home/chi/workspace/ai_basics/pytorch/distributed/demo/mount/data/",
+                "MODEL_PATH" : "models"
+            }
+        },
         {
             "name": "Python: Flask",
             "type": "python",
@@ -28,7 +33,7 @@
                 "--no-debugger",
                 "--no-reload"
             ],
-            "jinja": true
+            "jinja": "true"
         }
     ]
 }

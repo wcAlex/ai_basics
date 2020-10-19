@@ -396,7 +396,6 @@ rank, world_size, master_address, master_port = getProcessGroupInfo()
 world_size = int(world_size)
 # Number of additional worker processes for dataloading
 workers = world_size
-is_distributed = world_size > 1
 
 print("Initialize Process Group...")
 # Initialize Process Group
@@ -514,7 +513,7 @@ valset = datasets.STL10(root=data_path, split='test', download=True, transform=t
 # Create DistributedSampler to handle distributing the dataset across nodes when training
 # This can only be called after torch.distributed.init_process_group is called
 # Distributed Sampler will query distribute group to figure out rank and world_size.
-train_sampler = torch.utils.data.distributed.DistributedSampler(trainset) if is_distributed else None
+train_sampler = torch.utils.data.distributed.DistributedSampler(trainset)
 
 # Create the Dataloaders to feed data to the training and validation steps
 train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=(train_sampler is None), num_workers=workers, pin_memory=False, sampler=train_sampler)
@@ -572,7 +571,10 @@ if rank == 0:
     print(f"save model at {path}")
     torch.save(model.state_dict(), path)
 
-input("Press Enter to exit...")
+try:
+    input("Press Enter to exit...")
+except EOFError as e:
+    print(e)
 
 ######################################################################
 # Running the Code with sync server
