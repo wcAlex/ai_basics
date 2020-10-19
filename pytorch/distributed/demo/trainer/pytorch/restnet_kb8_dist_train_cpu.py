@@ -426,7 +426,7 @@ model_path = "model.ts"
 if 'MODEL_PATH' in os.environ and os.getenv('MODEL_PATH') is not None:
     model_path = os.getenv('MODEL_PATH') 
     Path(model_path).mkdir(parents=True, exist_ok=True)
-    model_path = model_path + "model.ts"
+    model_path = model_path + "/model.ts"
 
 print(f"Initialize process group, world_size={world_size}, process rank={rank}, master address={master_address}:{master_port}, data:{data_path}, model:{model_path}")
 
