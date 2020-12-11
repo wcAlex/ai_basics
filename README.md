@@ -1,2 +1,3 @@
 # ai_basics
-Practice on some basic ai concepts &amp; algorithm 
+Practice on some basic ai concepts &amp; algorithms 
+
